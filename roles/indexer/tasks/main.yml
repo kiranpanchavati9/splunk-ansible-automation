@@ -1,0 +1,31 @@
+- name: Configure Indexer as Cluster Peer
+  command: >
+    {{ splunk_home }}/bin/splunk
+    edit cluster-config
+    -mode peer
+    -manager_uri {{ cluster_manager_uri }}
+    -replication_port 9887
+    -secret {{ cluster_secret }}
+    -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+
+- name: Restart Splunk
+  command: >
+    {{ splunk_home }}/bin/splunk
+    restart
+
+- name: Wait for Splunk to start
+  wait_for:
+    port: 8089
+    timeout: 180
+
+- name: Verify Cluster Peer Status
+  command: >
+    {{ splunk_home }}/bin/splunk
+    show cluster-status
+    -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+  register: cluster_status
+  changed_when: false
+
+- name: Display Cluster Status
+  debug:
+    var: cluster_status.stdout
