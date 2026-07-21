@@ -1,0 +1,5 @@
+- name: Search Head Cluster Playbook
+  hosts: search_heads
+  become: yes
+  roles:
+    - role: search_head

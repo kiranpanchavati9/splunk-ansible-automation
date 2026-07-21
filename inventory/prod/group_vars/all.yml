@@ -1,0 +1,20 @@
+---
+ansible_user: ec2-user
+ansible_python_interpreter: /usr/bin/python3
+
+splunk_home: /opt/splunk
+splunk_admin_user: admin
+splunk_admin_password: Pa55word
+
+cluster_secret: SplunkCluster@123
+shcluster_secret: SplunkSHCluster@123
+cluster_label: Splunk-Prod-Cluster
+shcluster_label: Splunk-Prod-SHCluster
+
+cluster_manager_uri: https://cluster-manager.prod.kiranpanchavati.online:8089
+deployer_uri: https://deployer.prod.kiranpanchavati.online:8089
+license_manager_uri: https://license-master.prod.kiranpanchavati.online:8089
+monitoring_console_uri: https://monitoring-console.prod.kiranpanchavati.online:8000
+
+replication_factor: 2
+search_factor: 2

@@ -1,0 +1,13 @@
+- name: Configure Cluster Manager
+  command: > {{ splunk_home }}/bin/splunk edit cluster-config -mode manager -replication_factor {{ replication_factor }} -search_factor {{ search_factor }} -secret {{ cluster_secret }} -manager_uri {{ cluster_manager_uri }} -auth admin:{{ splunk_admin_password }}
+
+- name: Restart Cluster Manager
+  command: > {{ splunk_home }}/bin/splunk restart splunk
+  become: yes
+
+- name: Wait for the Splunk Cluster Manager to be ready
+  commmand: > {{ splunk_home }}/bin/splunk status 
+
+- name: Display Cluster Status
+  debug:
+    var: status.stdout

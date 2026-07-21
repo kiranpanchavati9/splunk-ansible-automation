@@ -1,0 +1,9 @@
+---
+- import_playbook: cluster-manager.yml
+- import_playbook: indexer-cluster.yml
+- import_playbook: search-head-cluster.yml
+- import_playbook: deployer.yml
+- import_playbook: deployment-server.yml
+- import_playbook: license-manager.yml
+- import_playbook: monitoring-console.yml
+- import_playbook: heavy-forwarder.yml

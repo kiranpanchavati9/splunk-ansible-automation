@@ -1,0 +1,5 @@
+- name: Cluster Manager Playbook
+  hosts: cluster_manager
+  become: yes
+  roles:
+    - role: cluster_manager
