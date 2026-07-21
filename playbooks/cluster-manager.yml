@@ -2,4 +2,4 @@
   hosts: cluster_manager
   become: yes
   roles:
-    - role: cluster_manager
+    - role: cluster-manager
