@@ -1,6 +1,5 @@
  - name: Indexer Cluster Playbook
-  hosts: indexers
-  become: yes
-  roles:
+    hosts: indexers
+    become: yes
+    roles:
     - role: indexer 
-    
