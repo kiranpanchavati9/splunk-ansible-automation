@@ -6,8 +6,9 @@
     -manager_uri {{ cluster_manager_uri }}
     -replication_port 9887
     -secret {{ cluster_secret }}
+    -cluster_label {{ cluster_label }}
     -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
-
+    
 - name: Restart Splunk
   command: >
     {{ splunk_home }}/bin/splunk
