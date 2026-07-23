@@ -1,34 +1,58 @@
-- name: Deploy search head cluster configuration
-  ansible.builtin.template:
-    src: server.conf.j2
-    dest: "{{ splunk_home }}/etc/system/local/server.conf"
-    mode: "0644"
+- name: Configure SHC settings
+  community.general.ini_file:
+    path: "{{ splunk_home }}/etc/system/local/server.conf"
+    section: shclustering
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
     owner: splunk
     group: splunk
-  register: server_conf_result
+    mode: "0644"
+    no_extra_spaces: true
+  loop:
+    - option: disabled
+      value: "false"
+    - option: mgmt_uri
+      value: "https://{{ inventory_hostname }}:8089"
+    - option: replication_factor
+      value: "{{ shcluster_replication_factor }}"
+    - option: conf_deploy_fetch_url
+      value: "{{ deployer_url }}"
+    - option: shcluster_label
+      value: "{{ shcluster_label }}"
+    - option: pass4SymmKey
+      value: "{{ shcluster_secret }}"
+  notify: Restart Splunk
 
-- name: Restart Splunk
-  ansible.builtin.command:
-    cmd: "{{ splunk_home }}/bin/splunk restart"
-  when: server_conf_result.changed
+- name: Configure Splunk server name
+  community.general.ini_file:
+    path: "{{ splunk_home }}/etc/system/local/server.conf"
+    section: general
+    option: serverName
+    value: "{{ inventory_hostname }}"
+    owner: splunk
+    group: splunk
+    mode: "0644"
+    no_extra_spaces: true
+  notify: Restart Splunk
 
-- name: Check Search Head Cluster status
-  ansible.builtin.command:
-    cmd: >
-      {{ splunk_home }}/bin/splunk show shcluster-status
-      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
-  register: shcluster_status
-  changed_when: false
-  failed_when: false
-  when: inventory_hostname == groups['search_heads'][0]
 
-- name: Bootstrap Search Head Cluster captain
-  ansible.builtin.command:
-    cmd: >
-      {{ splunk_home }}/bin/splunk bootstrap shcluster-captain
-      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
-  register: bootstrap_result
-  when:
-    - inventory_hostname == groups['search_heads'][0]
-    - shcluster_status.rc != 0
-    - "'already joined another cluster' not in shcluster_status.stderr"
+  - name: Configure SHC replication port
+  community.general.ini_file:
+    path: "{{ splunk_home }}/etc/system/local/server.conf"
+    section: "replication_port://{{ shcluster_replication_port }}"
+    allow_no_value: true
+    owner: splunk
+    group: splunk
+    mode: "0644"
+  notify: Restart Splunk
+
+
+  - name: Ensure replication port stanza exists
+  ansible.builtin.blockinfile:
+    path: "{{ splunk_home }}/etc/system/local/server.conf"
+    marker: "# {mark} ANSIBLE SHC REPLICATION PORT"
+    block: |
+      [replication_port://{{ shcluster_replication_port }}]
+    owner: splunk
+    group: splunk
+    mode: "0644"
