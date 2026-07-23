@@ -1,3 +1,4 @@
+---
 - name: Configure SHC settings
   community.general.ini_file:
     path: "{{ splunk_home }}/etc/system/local/server.conf"
@@ -16,12 +17,11 @@
     - option: replication_factor
       value: "{{ shcluster_replication_factor }}"
     - option: conf_deploy_fetch_url
-      value: "{{ deployer_url }}"
+      value: "https://{{ deployer_host }}:8089"
     - option: shcluster_label
       value: "{{ shcluster_label }}"
     - option: pass4SymmKey
       value: "{{ shcluster_secret }}"
-  notify: Restart Splunk
 
 - name: Configure Splunk server name
   community.general.ini_file:
@@ -33,10 +33,8 @@
     group: splunk
     mode: "0644"
     no_extra_spaces: true
-  notify: Restart Splunk
 
-
-  - name: Configure SHC replication port
+- name: Configure SHC replication port
   community.general.ini_file:
     path: "{{ splunk_home }}/etc/system/local/server.conf"
     section: "replication_port://{{ shcluster_replication_port }}"
@@ -44,15 +42,25 @@
     owner: splunk
     group: splunk
     mode: "0644"
-  notify: Restart Splunk
 
-
-  - name: Ensure replication port stanza exists
-  ansible.builtin.blockinfile:
+- name: Configure indexer cluster connection
+  community.general.ini_file:
     path: "{{ splunk_home }}/etc/system/local/server.conf"
-    marker: "# {mark} ANSIBLE SHC REPLICATION PORT"
-    block: |
-      [replication_port://{{ shcluster_replication_port }}]
+    section: clustering
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
     owner: splunk
     group: splunk
     mode: "0644"
+    no_extra_spaces: true
+  loop:
+    - option: mode
+      value: searchhead
+    - option: manager_uri
+      value: "https://{{ cluster_manager_host }}:8089"
+    - option: pass4SymmKey
+      value: "{{ idxc_secret }}"
+
+- name: Restart Splunk
+  ansible.builtin.command:
+    cmd: "{{ splunk_home }}/bin/splunk restart"
