@@ -7,11 +7,8 @@
     owner: splunk
     group: splunk
     mode: "0644"
-  notify: Restart Splunk
 
-handlers:
-  - name: Restart Splunk
-    ansible.builtin.command:
-      cmd: "{{ splunk_home }}/bin/splunk restart"
-    become: yes
-    become_user: splunk
+- name: Restart Splunk
+  command: >
+    {{ splunk_home }}/bin/splunk
+    restart
