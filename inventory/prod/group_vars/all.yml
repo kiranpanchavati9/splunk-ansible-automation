@@ -15,6 +15,11 @@ cluster_manager_uri: https://cluster-manager.prod.kiranpanchavati.online:8089
 deployer_uri: https://deployer.prod.kiranpanchavati.online:8089
 license_manager_uri: https://license-master.prod.kiranpanchavati.online:8089
 monitoring_console_uri: https://monitoring-console.prod.kiranpanchavati.online:8000
+search_head_1_uri: https://search-head1.prod.kiranpanchavati.online:8000
+search_head_2_uri: https://search-head2.prod.kiranpanchavati.online:8000
+search_head_3_uri: https://search-head3.prod.kiranpanchavati.online:8000
 
 replication_factor: 2
 search_factor: 2
+shcluster_replication_factor: 2
+shcluster_replication_port: 9000
