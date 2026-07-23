@@ -1,0 +1,17 @@
+- name: Configure Search Head Cluster Secret
+  ansible.builtin.ini_file:
+    path: "{{ splunk_home }}/etc/system/local/server.conf"
+    section: "shclustering"
+    option: "pass4SymmKey"
+    value: "{{ shcluster_secret }}"
+    owner: splunk
+    group: splunk
+    mode: "0644"
+  notify: Restart Splunk
+
+handlers:
+  - name: Restart Splunk
+    ansible.builtin.command:
+      cmd: "{{ splunk_home }}/bin/splunk restart"
+    become: yes
+    become_user: splunk
