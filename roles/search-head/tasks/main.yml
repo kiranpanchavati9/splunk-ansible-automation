@@ -6,6 +6,12 @@
     owner: splunk
     group: splunk
 
+- name: Bootstrap Search Head Cluster Captain
+  command: >
+    {{ splunk_home }}/bin/splunk bootstrap shcluster-captain
+    -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+  when: inventory_hostname == groups['search_heads'][0]
+
 - name: Restart Splunk
   command: >
     {{ splunk_home }}/bin/splunk
