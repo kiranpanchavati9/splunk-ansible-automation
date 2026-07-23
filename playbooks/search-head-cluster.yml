@@ -2,4 +2,4 @@
   hosts: search_heads
   become: yes
   roles:
-    - role: search_head
+    - role: search-head
