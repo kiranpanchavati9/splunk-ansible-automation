@@ -5,27 +5,30 @@
     mode: "0644"
     owner: splunk
     group: splunk
+  register: server_conf_result
 
 - name: Restart Splunk
-  ansible.builtin.command: >
-    {{ splunk_home }}/bin/splunk restart
-  register: splunk_restart
+  ansible.builtin.command:
+    cmd: "{{ splunk_home }}/bin/splunk restart"
+  when: server_conf_result.changed
 
-- name: Check Search Head Cluster Status
-  ansible.builtin.command: >
-    {{ splunk_home }}/bin/splunk show shcluster-status
+- name: Check Search Head Cluster status
+  ansible.builtin.command:
+    cmd: >
+      {{ splunk_home }}/bin/splunk show shcluster-status
+      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
   register: shcluster_status
-  failed_when: false
   changed_when: false
+  failed_when: false
+  when: inventory_hostname == groups['search_heads'][0]
 
-- name: Bootstrap Search Head Cluster Captain
-  ansible.builtin.command: >
-    {{ splunk_home }}/bin/splunk bootstrap shcluster-captain
-    -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+- name: Bootstrap Search Head Cluster captain
+  ansible.builtin.command:
+    cmd: >
+      {{ splunk_home }}/bin/splunk bootstrap shcluster-captain
+      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+  register: bootstrap_result
   when:
     - inventory_hostname == groups['search_heads'][0]
     - shcluster_status.rc != 0
-  register: bootstrap_result
-  failed_when: >
-    bootstrap_result.rc != 0 and
-    'already joined another cluster' not in bootstrap_result.stderr
+    - "'already joined another cluster' not in shcluster_status.stderr"
