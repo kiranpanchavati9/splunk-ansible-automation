@@ -1,8 +1,8 @@
 - name: Deploy search head cluster configuration
   ansible.builtin.template:
     src: server.conf.j2
-    dest: {{ splunk_home }}/etc/system/local/server.conf
-    mode: 0644
+    dest: "{{ splunk_home }}/etc/system/local/server.conf"
+    mode: "0644"
     owner: splunk
     group: splunk
   notify: restart splunk
