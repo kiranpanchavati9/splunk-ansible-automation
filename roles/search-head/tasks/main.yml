@@ -17,7 +17,7 @@
     - option: replication_factor
       value: "{{ shcluster_replication_factor }}"
     - option: conf_deploy_fetch_url
-      value: "https://{{ deployer_host }}:8089"
+      value: "{{ deployer_uri }}"
     - option: shcluster_label
       value: "{{ shcluster_label }}"
     - option: pass4SymmKey
@@ -57,9 +57,9 @@
     - option: mode
       value: searchhead
     - option: manager_uri
-      value: "https://{{ cluster_manager_host }}:8089"
+      value: "{{ cluster_manager_uri }}"
     - option: pass4SymmKey
-      value: "{{ idxc_secret }}"
+      value: "{{ cluster_secret }}"
 
 - name: Restart Splunk
   ansible.builtin.command:
