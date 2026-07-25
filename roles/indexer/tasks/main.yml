@@ -25,7 +25,3 @@
     -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
   register: cluster_status
   changed_when: false
-
-- name: Display Cluster Status
-  debug:
-    var: cluster_status.stdout
