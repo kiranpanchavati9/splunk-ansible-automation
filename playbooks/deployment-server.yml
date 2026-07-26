@@ -1,0 +1,5 @@
+- name: Deployment Server Playbook
+  hosts: deployment-server
+  become: yes
+  roles:
+    - deployment-server

@@ -1,0 +1,23 @@
+- name: Check the status of the heavy forwarder
+  command: | {"splunk_home"}/bin/splunk status
+  register: status
+
+- name: Print the status of the heavy forwarder
+  debug:
+    var: status
+
+- Connect the heavy forwarder to the Splunk deployment server 
+  command: | {"splunk_home"}/bin/splunk add forward-server {"deployment_server_uri"}:8089 -auth admin:Pa55word
+  register: add_forward_server
+
+- name: Print the add forward server status
+  debug:
+    var: add_forward_server
+
+- name: Restart the heavy forwarder
+  command: | {"splunk_home"}/bin/splunk restart
+  register: restart
+
+- name: Print the restart status of the heavy forwarder
+  debug:
+    var: restart

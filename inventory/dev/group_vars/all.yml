@@ -19,6 +19,7 @@ monitoring_console_uri: https://monitoring-console.dev.kiranpanchavati.online:80
 search_head_1_uri: https://search-head1.dev.kiranpanchavati.online:8000
 search_head_2_uri: https://search-head2.dev.kiranpanchavati.online:8000
 search_head_3_uri: https://search-head3.dev.kiranpanchavati.online:8000 
+deployment_server_uri: https:/deployment-server.dev.kiranpanchavati.online:8089
 
 
 shc_members_uri_list: >-
