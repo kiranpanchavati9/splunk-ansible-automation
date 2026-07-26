@@ -1,10 +1,13 @@
 - name: Check the status of the heavy forwarder
-  command: | {"splunk_home"}/bin/splunk status
+  command: 
+    cmd: "{{ splunk_home }}/bin/splunk status -auth admin:{{ splunk_admin_password }}"
   register: status
+  changed_when: false
+  failed_when: false
 
 - name: Print the status of the heavy forwarder
   debug:
-    var: status
+    var: hf_status.stdout_lines
 
 - Connect the heavy forwarder to the Splunk deployment server 
   command: | {"splunk_home"}/bin/splunk add forward-server {"deployment_server_uri"}:8089 -auth admin:Pa55word
@@ -15,7 +18,8 @@
     var: add_forward_server
 
 - name: Restart the heavy forwarder
-  command: | {"splunk_home"}/bin/splunk restart
+  command: 
+    cmd: "{{ splunk_home }}/bin/splunk restart -auth admin:{{ splunk_admin_password }}"
   register: restart
 
 - name: Print the restart status of the heavy forwarder
