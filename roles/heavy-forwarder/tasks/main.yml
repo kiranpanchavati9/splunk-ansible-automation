@@ -27,11 +27,5 @@
 
 - name: Restart Heavy Forwarder
   ansible.builtin.command:
-    cmd: >
-      {{ splunk_home }}/bin/splunk restart
-      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+    cmd: "{{ splunk_home }}/bin/splunk restart"
   register: restart
-
-- name: Print restart result
-  ansible.builtin.debug:
-    var: restart.stdout_lines
