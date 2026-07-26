@@ -10,7 +10,7 @@
     var: hf_status.stdout_lines
 
 - Connect the heavy forwarder to the Splunk deployment server 
-  command: | {"splunk_home"}/bin/splunk add forward-server {"deployment_server_uri"}:8089 -auth admin:Pa55word
+  command: | "{splunk_home}/bin/splunk add forward-server {deployment_server_uri}:8089 -auth admin:{{splunk_admin_password}}"
   register: add_forward_server
 
 - name: Print the add forward server status
