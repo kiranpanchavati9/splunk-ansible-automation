@@ -1,0 +1,5 @@
+- name: Heavy forwarder Playbook
+  hosts: heavy-forwarder
+  become: yes
+  roles:
+    - heavy-forwarder
