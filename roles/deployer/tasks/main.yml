@@ -1,5 +1,5 @@
 - name: Configure Search Head Cluster Secret
-  ini_file:
+  community.general.ini_file:
     path: "{{ splunk_home }}/etc/system/local/server.conf"
     section: shclustering
     option: pass4SymmKey
@@ -7,6 +7,4 @@
     owner: splunk
     group: splunk
     mode: "0644"
-
-- name: Restart Splunk
-  command: "{{ splunk_home }}/bin/splunk restart"
+  notify: Restart Splunk
