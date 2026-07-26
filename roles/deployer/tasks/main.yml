@@ -1,3 +1,4 @@
+---
 - name: Configure Search Head Cluster Secret
   community.general.ini_file:
     path: "{{ splunk_home }}/etc/system/local/server.conf"
