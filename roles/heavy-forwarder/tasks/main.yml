@@ -1,29 +1,36 @@
-- name: Check the status of the heavy forwarder
-  command: 
-    cmd: "{{ splunk_home }}/bin/splunk status -auth admin:{{ splunk_admin_password }}"
+---
+- name: Check the status of the Heavy Forwarder
+  ansible.builtin.command:
+    cmd: >
+      {{ splunk_home }}/bin/splunk status
   register: status
   changed_when: false
   failed_when: false
 
-- name: Print the status of the heavy forwarder
-  debug:
-    var: hf_status.stdout_lines
+- name: Print Heavy Forwarder status
+  ansible.builtin.debug:
+    var: status.stdout_lines
 
-- Connect the heavy forwarder to the Splunk deployment server 
-  command: | "{{splunk_home}}/bin/splunk add forward-server {{deployment_server_uri}}:8089 -auth admin:{{splunk_admin_password}}"
-  register: add_forward_server
-  changed_when: false
-  failed_when: false
+- name: Connect Heavy Forwarder to Deployment Server
+  ansible.builtin.command:
+    cmd: >
+      {{ splunk_home }}/bin/splunk set deploy-poll
+      {{ deployment_server_uri }}
+      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+  register: deploy_server
+  no_log: true
 
-- name: Print the add forward server status
-  debug:
-    var: add_forward_server
+- name: Print Deployment Server result
+  ansible.builtin.debug:
+    var: deploy_server.stdout_lines
 
-- name: Restart the heavy forwarder
-  command: 
-    cmd: "{{ splunk_home }}/bin/splunk restart -auth admin:{{ splunk_admin_password }}"
+- name: Restart Heavy Forwarder
+  ansible.builtin.command:
+    cmd: >
+      {{ splunk_home }}/bin/splunk restart
+      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
   register: restart
 
-- name: Print the restart status of the heavy forwarder
-  debug:
-    var: restart
+- name: Print restart result
+  ansible.builtin.debug:
+    var: restart.stdout_lines
