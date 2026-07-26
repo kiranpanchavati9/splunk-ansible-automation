@@ -157,4 +157,4 @@
   when: "'captain' not in shc_status.stdout | lower"
   register: shc_bootstrap_result
   changed_when: "'captain' in shc_bootstrap_result.stdout | lower"
-  no_log: true
+  # no_log: true   <-- Comment this temporarily
