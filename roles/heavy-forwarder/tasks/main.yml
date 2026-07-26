@@ -18,7 +18,8 @@
       {{ deployment_server_uri }}
       -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
   register: deploy_server
-  no_log: true
+  changed_when: false
+  failed_when: false
 
 - name: Print Deployment Server result
   ansible.builtin.debug:
