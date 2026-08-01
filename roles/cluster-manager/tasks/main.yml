@@ -1,71 +1,70 @@
 ---
 - name: Configure Cluster Manager
-  command: >
-    {{ splunk_home }}/bin/splunk
-    edit cluster-config
-    -mode manager
-    -replication_factor {{ replication_factor }}
-    -search_factor {{ search_factor }}
-    -secret {{ cluster_secret }}
-    -cluster_label {{ cluster_label }}
-    -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+  ansible.builtin.command:
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - edit
+      - cluster-config
+      - -mode
+      - manager
+      - -replication_factor
+      - "{{ replication_factor | string }}"
+      - -search_factor
+      - "{{ search_factor | string }}"
+      - -secret
+      - "{{ cluster_secret }}"
+      - -cluster_label
+      - "{{ cluster_label }}"
+      - -auth
+      - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
+  become: true
+  become_user: splunk
+  no_log: true
+  notify: Restart Splunk
 
-- name: Restart Splunk
-  command: >
-    {{ splunk_home }}/bin/splunk
-    restart
-
-- name: Wait for Splunk to start
-  command: >
-    {{ splunk_home }}/bin/splunk
-    status
-  register: status
-  retries: 30
-  delay: 10
-  until: "'splunkd is running' in status.stdout"
-  changed_when: false
-
-- name: Display Splunk Status
-  debug:
-    var: status.stdout
-
-- name: create a new index 
-  ansible.builtin.file:
-    path: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app"
-    state: directory
-    owner: splunk
-    group: splunk
-    mode: '0755'
-
-- name: Create default directory for the app
-  ansible.builtin.file:
-    path: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app/default"
-    state: directory
-    owner: splunk
-    group: splunk
-    mode: '0755'
-
-- name: Create local directory for the app
+- name: Create custom index app directory
   ansible.builtin.file:
     path: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app/local"
     state: directory
     owner: splunk
     group: splunk
-    mode: '0755'
+    mode: "0755"
+  become: true
 
-- name: Create indexes.conf in the local directory
+- name: Create indexes.conf
   ansible.builtin.copy:
     dest: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app/local/indexes.conf"
     owner: splunk
     group: splunk
-    mode: '0644'
+    mode: "0644"
     content: |
       [infra_linux_custom_index]
-      homePath   = $SPLUNK_DB/infra_linux_custom_index/db
-      coldPath   = $SPLUNK_DB/infra_linux_custom_index/colddb
+      homePath = $SPLUNK_DB/infra_linux_custom_index/db
+      coldPath = $SPLUNK_DB/infra_linux_custom_index/colddb
       thawedPath = $SPLUNK_DB/infra_linux_custom_index/thaweddb
       maxTotalDataSizeMB = 500000
       frozenTimePeriodInSecs = 7776000
+  become: true
+  notify: Apply Indexer Cluster Bundle
 
-- name: Push the app to the indexers. 
-  ansible.builtin.command: {{splunk_home}}/bin/splunk apply cluster-bundle -auth {{splunk_admin_user }}:{{splunk_admin_password }}
+- name: Run notified handlers now
+  ansible.builtin.meta: flush_handlers
+
+- name: Check Splunk status
+  ansible.builtin.command:
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - status
+  become: true
+  become_user: splunk
+  register: splunk_status
+  retries: 30
+  delay: 10
+  until:
+    - splunk_status.rc == 0
+    - "'splunkd is running' in splunk_status.stdout"
+  changed_when: false
+
+- name: Display Splunk status
+  ansible.builtin.debug:
+    var: splunk_status.stdout_lines

@@ -1,0 +1,23 @@
+---
+- name: Restart Splunk
+  ansible.builtin.command:
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - restart
+  become: true
+  become_user: splunk
+  listen: Restart Splunk
+
+- name: Apply Indexer Cluster Bundle
+  ansible.builtin.command:
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - apply
+      - cluster-bundle
+      - --answer-yes
+      - -auth
+      - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
+  become: true
+  become_user: splunk
+  no_log: true
+  listen: Apply Indexer Cluster Bundle
