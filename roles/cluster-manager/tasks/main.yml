@@ -28,3 +28,44 @@
 - name: Display Splunk Status
   debug:
     var: status.stdout
+
+- name: create a new index 
+  ansible.builtin.file:
+    path: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app"
+    state: directory
+    owner: splunk
+    group: splunk
+    mode: '0755'
+
+- name: Create default directory for the app
+  ansible.builtin.file:
+    path: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app/default"
+    state: directory
+    owner: splunk
+    group: splunk
+    mode: '0755'
+
+- name: Create local directory for the app
+  ansible.builtin.file:
+    path: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app/local"
+    state: directory
+    owner: splunk
+    group: splunk
+    mode: '0755'
+
+- name: Create indexes.conf in the local directory
+  ansible.builtin.copy:
+    dest: "{{ splunk_home }}/etc/manager-apps/ta_index_custom_app/local/indexes.conf"
+    owner: splunk
+    group: splunk
+    mode: '0644'
+    content: |
+      [infra_linux_custom_index]
+      homePath   = $SPLUNK_DB/infra_linux_custom_index/db
+      coldPath   = $SPLUNK_DB/infra_linux_custom_index/colddb
+      thawedPath = $SPLUNK_DB/infra_linux_custom_index/thaweddb
+      maxTotalDataSizeMB = 500000
+      frozenTimePeriodInSecs = 7776000
+
+- name: Push the app to the indexers. 
+  ansible.builtin.command: {{splunk_home}}/bin/splunk apply cluster-bundle -auth {{splunk_admin_user }}:{{splunk_admin_password }}
