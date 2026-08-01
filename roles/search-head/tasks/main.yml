@@ -134,11 +134,14 @@
   retries: 60
   delay: 10
 
-- name: Check current shcluster status
+- name: Check current Search Head Cluster status
   ansible.builtin.command:
-    cmd: >
-      {{ splunk_home }}/bin/splunk show shcluster-status
-      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - show
+      - shcluster-status
+      - -auth
+      - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
   run_once: true
   delegate_to: "{{ groups['search_heads'][0] }}"
   register: shc_status
@@ -146,15 +149,36 @@
   failed_when: false
   no_log: true
 
-- name: Bootstrap Search Head Cluster captain
-  ansible.builtin.command:
-    cmd: >
-      {{ splunk_home }}/bin/splunk bootstrap shcluster-captain
-      -servers_list "{{ shc_members_uri_list }}"
-      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+- name: Determine whether SHC is already initialized
+  ansible.builtin.set_fact:
+    shc_already_initialized: >-
+      {{
+        shc_status.rc == 0 and
+        (
+          'dynamic_captain' in (shc_status.stdout | lower)
+          or
+          'service_ready_flag : 1' in (shc_status.stdout | lower)
+          or
+          'service_ready_flag:1' in
+             (shc_status.stdout | lower | regex_replace('\\s+', ''))
+        )
+      }}
   run_once: true
   delegate_to: "{{ groups['search_heads'][0] }}"
-  when: "'captain' not in shc_status.stdout | lower"
+
+- name: Bootstrap Search Head Cluster captain
+  ansible.builtin.command:
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - bootstrap
+      - shcluster-captain
+      - -servers_list
+      - "{{ shc_members_uri_list | regex_replace('\\s+', '') }}"
+      - -auth
+      - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
+  run_once: true
+  delegate_to: "{{ groups['search_heads'][0] }}"
+  when: not shc_already_initialized | bool
   register: shc_bootstrap_result
-  changed_when: "'captain' in shc_bootstrap_result.stdout | lower"
-  # no_log: true   <-- Comment this temporarily
+  changed_when: shc_bootstrap_result.rc == 0
+  no_log: true
