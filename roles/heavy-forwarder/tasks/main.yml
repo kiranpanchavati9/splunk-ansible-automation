@@ -20,7 +20,7 @@
       - "{{ splunk_home }}/bin/splunk"
       - set
       - deploy-poll
-      - "{{ deployment_server }}:8089"
+      - "{{ deployment_server_uri }}:8089"
       - -auth
       - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
   become: true
@@ -30,7 +30,7 @@
   no_log: false
   notify: Restart Splunk
 
-  
+
 - name: Connect Heavy Forwarder to License Manager
   ansible.builtin.command:
     argv:
@@ -38,7 +38,7 @@
       - edit
       - licenser-localpeer
       - -manager_uri
-      - "https://{{ license_manager }}:8089"
+      - "https://{{ license_manager_uri }}:8089"
       - -auth
       - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
   become: true
