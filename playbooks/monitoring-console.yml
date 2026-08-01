@@ -1,0 +1,5 @@
+- name: Monitoring console Playbook
+  hosts: monitoring_console
+  become: yes
+  roles:
+    - monitoring-console

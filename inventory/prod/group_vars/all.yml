@@ -1,3 +1,4 @@
+---
 ansible_user: ec2-user
 ansible_ssh_private_key_file: /home/ec2-user/.ssh/aws-helpag.pem
 ansible_python_interpreter: /usr/bin/python3
@@ -15,9 +16,16 @@ cluster_manager_uri: https://cluster-manager.prod.kiranpanchavati.online:8089
 deployer_uri: https://deployer.prod.kiranpanchavati.online:8089
 license_manager_uri: https://license-master.prod.kiranpanchavati.online:8089
 monitoring_console_uri: https://monitoring-console.prod.kiranpanchavati.online:8000
-search_head_1_uri: https://search-head1.prod.kiranpanchavati.online:8000
 search_head_2_uri: https://search-head2.prod.kiranpanchavati.online:8000
-search_head_3_uri: https://search-head3.prod.kiranpanchavati.online:8000
+search_head_3_uri: https://search-head3.prod.kiranpanchavati.online:8000 
+deployment_server_uri: https://deployment-server.prod.kiranpanchavati.online:8089
+indexer_1_uri: https://indexer1.prod.kiranpanchavati.online:9997
+indexer_2_uri: https://indexer2.prod.kiranpanchavati.online:9997
+
+shc_members_uri_list: >-
+  https://search-head1.prod.kiranpanchavati.online:8089,
+  https://search-head2.prod.kiranpanchavati.online:8089,
+  https://search-head3.prod.kiranpanchavati.online:8089
 
 replication_factor: 2
 search_factor: 2

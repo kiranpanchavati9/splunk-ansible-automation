@@ -7,3 +7,4 @@
 - import_playbook: license-manager.yml
 - import_playbook: monitoring-console.yml
 - import_playbook: heavy-forwarder.yml
+- import_playbook: universal-forwarder.yml  
