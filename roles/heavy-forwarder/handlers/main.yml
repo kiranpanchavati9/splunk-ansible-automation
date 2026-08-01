@@ -1,0 +1,9 @@
+---
+- name: Restart Splunk
+  ansible.builtin.command:
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - restart
+  become: true
+  become_user: splunk
+  listen: Restart Splunk
