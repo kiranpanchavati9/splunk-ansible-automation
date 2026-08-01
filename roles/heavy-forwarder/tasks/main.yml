@@ -5,13 +5,9 @@
   become: true
 
 - name: Grant read permission on /var/log/secure to splunk user via ACL
-  ansible.posix.acl:
-    path: /var/log/secure
-    entity: splunk
-    etype: user
-    permissions: r
-    state: present
+  ansible.builtin.command: setfacl -m u:splunk:r /var/log/secure
   become: true
+  changed_when: false
 
 - name: Check Heavy Forwarder status
   ansible.builtin.command:
