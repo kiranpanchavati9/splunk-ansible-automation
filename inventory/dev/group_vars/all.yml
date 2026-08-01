@@ -20,7 +20,8 @@ search_head_1_uri: https://search-head1.dev.kiranpanchavati.online:8000
 search_head_2_uri: https://search-head2.dev.kiranpanchavati.online:8000
 search_head_3_uri: https://search-head3.dev.kiranpanchavati.online:8000 
 deployment_server_uri: https://deployment-server.dev.kiranpanchavati.online:8089
-
+indexer_1_uri: https://indexer1.dev.kiranpanchavati.online:9997
+indexer_2_uri: https://indexer2.dev.kiranpanchavati.online:9997
 
 shc_members_uri_list: >-
   https://search-head1.dev.kiranpanchavati.online:8089,

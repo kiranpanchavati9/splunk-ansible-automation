@@ -11,3 +11,58 @@
       [serverClass:dev_infrateam_linux:app:deployment_server]
       restartSplunkd = true
   notify: Restart Splunk
+
+- name: Create new custom app and add this to serverclass and push the app to the heavy forwarder
+    ansible.builtin.file:
+    path: "{{ splunk_home }}/etc/apps/deployment-apps/infra_linux_custom_app"
+    state: directory
+    owner: splunk
+    group: splunk
+    mode: '0755'
+
+- name: Create local directory for the app
+    ansible.builtin.file:
+      path: "{{ splunk_home }}/etc/apps/deployment-apps/infra_linux_custom_app/local"
+      state: directory
+      owner: splunk
+      group: splunk
+      mode: '0755'
+
+- name: Create metadata.conf file
+    ansible.builtin.copy:
+      dest: "{{ splunk_home }}/etc/apps/deployment-apps/infra_linux_custom_app/metadata.conf"
+      owner: splunk
+      group: splunk
+      mode: '0644'
+      content: |
+        [package]
+        name = infra_linux_custom_app
+        version = 1.0.0
+        author = Splunk
+        description = Custom app for deployment server
+
+- name: Create inputs.conf file in the local directory 
+    ansible.builtin.copy:
+      dest: "{{ splunk_home }}/etc/apps/deployment-apps/infra_linux_custom_app/local/inputs.conf"
+      owner: splunk
+      group: splunk
+      mode: '0644'
+      content: |
+        [monitor:///var/log/secure]
+        sourcetype = infra_linux_custom_sourcetype
+        index = infra_linux_custom_index
+        disabled = false 
+
+- name: Create outputs.conf file in the local directory
+    ansible.builtin.copy:
+      dest: "{{ splunk_home }}/etc/apps/deployment-apps/infra_linux_custom_app/local/outputs.conf"
+      owner: splunk
+      group: splunk
+      mode: '0644'
+      content: |
+        [tcpout:indexergroup]
+        server = {{ indexer_1_uri, indexer_2_uri }}
+
+- name: Push the app to the heavy forwarder
+    ansible.builtin.command:
+        - "{{ splunk_home }}/bin/splunk/splunk reload deploy-server"
