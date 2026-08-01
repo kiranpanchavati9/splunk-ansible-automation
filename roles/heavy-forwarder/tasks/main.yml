@@ -1,4 +1,20 @@
 ---
+---
+- name: Ensure ACL package is installed
+  ansible.builtin.package:
+    name: acl
+    state: present
+  become: true
+
+- name: Grant read permission on /var/log/secure to splunk user via ACL
+  ansible.posix.acl:
+    path: /var/log/secure
+    entity: splunk
+    etype: user
+    permissions: r
+    state: present
+  become: true
+
 - name: Check Heavy Forwarder status
   ansible.builtin.command:
     argv:
@@ -29,7 +45,7 @@
   changed_when: deployment_server_result.rc == 0
   no_log: false
   notify: Restart Splunk
-  
+
 - name: Connect Heavy Forwarder to License Manager
   ansible.builtin.command:
     argv:
