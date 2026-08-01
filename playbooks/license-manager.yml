@@ -1,5 +1,5 @@
 - name: License Manager Playbook
-  hosts: license-manager
+  hosts: license_managers
   become: yes
 
   roles:
