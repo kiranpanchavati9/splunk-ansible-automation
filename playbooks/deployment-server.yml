@@ -1,5 +1,5 @@
 - name: Deployment Server Playbook
-  hosts: deployment-server
+  hosts: deployment_server
   become: yes
   roles:
     - deployment-server
