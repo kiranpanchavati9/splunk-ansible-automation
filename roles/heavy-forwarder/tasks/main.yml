@@ -38,7 +38,7 @@
       - edit
       - licenser-localpeer
       - -manager_uri
-      - "https://{{ license_manager_uri }}:8089"
+      - "https://{{ license_manager_uri }}"
       - -auth
       - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
   become: true
