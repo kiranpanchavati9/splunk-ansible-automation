@@ -27,9 +27,9 @@
   become_user: splunk
   register: deployment_server_result
   changed_when: deployment_server_result.rc == 0
-  no_log: true
+  no_log: false
   notify: Restart Splunk
-
+  
 - name: Connect Heavy Forwarder to License Manager
   ansible.builtin.command:
     argv:
