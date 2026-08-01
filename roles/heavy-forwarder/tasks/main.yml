@@ -1,48 +1,49 @@
 ---
-- name: Check the status of the Heavy Forwarder
+- name: Check Heavy Forwarder status
   ansible.builtin.command:
-    cmd: >
-      {{ splunk_home }}/bin/splunk status
-  register: status
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - status
+  become: true
+  become_user: splunk
+  register: splunk_status
   changed_when: false
   failed_when: false
 
 - name: Print Heavy Forwarder status
   ansible.builtin.debug:
-    var: status.stdout_lines
+    var: splunk_status.stdout_lines
 
 - name: Connect Heavy Forwarder to Deployment Server
   ansible.builtin.command:
-    cmd: >
-      {{ splunk_home }}/bin/splunk set deploy-poll
-      {{ deployment_server_uri }}
-      -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
-  register: deploy_server
-  changed_when: false
-  failed_when: false
+    argv:
+      - "{{ splunk_home }}/bin/splunk"
+      - set
+      - deploy-poll
+      - "{{ deployment_server_uri }}"
+      - -auth
+      - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
+  become: true
+  become_user: splunk
+  register: deployment_server_result
+  changed_when: deployment_server_result.rc == 0
+  no_log: true
+  notify: Restart Splunk
 
-- name: Print Deployment Server result
-  ansible.builtin.debug:
-    var: deploy_server.stdout_lines
-
-- name: Restart Heavy Forwarder
-  ansible.builtin.command:
-    cmd: "{{ splunk_home }}/bin/splunk restart"
-  register: restart
-
-
-- name: Connect Indexer to License Manager
+- name: Connect Heavy Forwarder to License Manager
   ansible.builtin.command:
     argv:
-      - /opt/splunk/bin/splunk
+      - "{{ splunk_home }}/bin/splunk"
       - edit
       - licenser-localpeer
       - -manager_uri
       - "https://{{ license_manager }}:8089"
       - -auth
-      - "admin:{{ splunk_admin_password }}"
+      - "{{ splunk_admin_user }}:{{ splunk_admin_password }}"
   become: true
   become_user: splunk
+  register: license_manager_result
+  changed_when: license_manager_result.rc == 0
   no_log: true
-  when: use_remote_license_manager | default(false)
+  when: use_remote_license_manager | default(false) | bool
   notify: Restart Splunk
