@@ -1,19 +1,21 @@
-- name: Create a Splunk local directory if not available
+- name: Create Splunk local directory if not available
   ansible.builtin.file:
-    path: "{{ splunk_home }}/etc/system/local/serverclass.conf"
-    state: directory 
+    path: "{{ splunk_home }}/etc/system/local"
+    state: directory
     owner: splunk
     group: splunk
     mode: '0755'
 
-- name: Create a serverclass.conf file
-  ansible.builtin.file:
-    path: "{{ splunk_home }}/etc/system/local/serverclass.conf"
-    state: directory
+- name: Create serverclass.conf file
+  ansible.builtin.copy:
+    dest: "{{ splunk_home }}/etc/system/local/serverclass.conf"
+    owner: splunk
+    group: splunk
+    mode: '0644'
     content: |
-      [serverclass:deployment_server]
-      serverclass = dev_infrateam_linux
-      owner = splunk
-      group = splunk
-      mode = '0755'
+      [serverClass:dev_infrateam_linux]
+      whitelist.0 = *
+
+      [serverClass:dev_infrateam_linux:app:deployment_server]
+      restartSplunkd = true
   notify: Restart Splunk
