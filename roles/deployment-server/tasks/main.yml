@@ -9,7 +9,7 @@
 - name: Create a serverclass.conf file
   ansible.builtin.file:
     path: "{{ splunk_home }}/etc/system/local/serverclass.conf"
-    state: present
+    state: directory
     content: |
       [serverclass:deployment_server]
       serverclass = dev_infrateam_linux
