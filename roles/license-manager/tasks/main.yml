@@ -1,0 +1,12 @@
+- name: Install License Manager
+  ansible.builtin.command:
+    cmd: > {{ splunk_home }}/bin/splunk edit licenser-localpeer -manager_uri self -auth {{ splunk_admin_user }}:{{ splunk_admin_password }}
+
+- name: Restart License Manager
+  ansible.builtin.command:
+    cmd: > {{ splunk_home }}/bin/splunk restart
+
+- name: Wait for License Manager to start
+  ansible.builtin.wait_for:
+    port: 8089
+    timeout: 180
